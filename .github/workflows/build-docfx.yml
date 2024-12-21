@@ -1,9 +1,10 @@
-name: Build and Deploy DocFX
+name: Build Documentation
 
 on:
   push:
     branches:
       - main
+  pull_request:
 
 jobs:
   build:
@@ -15,16 +16,16 @@ jobs:
 
     - name: Install DocFX
       run: |
-        sudo apt-get update
-        sudo apt-get install -y mono-complete
-        wget https://github.com/dotnet/docfx/releases/download/v2.59.1/docfx.zip
+        wget https://github.com/dotnet/docfx/releases/download/v2.70/docfx.zip
         unzip docfx.zip -d docfx
+        chmod +x ./docfx/docfx
 
     - name: Build Documentation
-      run: ./docfx/docfx docfx.json
+      run: |
+        ./docfx/docfx docfx.json
 
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
+    - name: Upload Documentation Artifact
+      uses: actions/upload-artifact@v3
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./_site
+        name: site-content
+        path: _site
